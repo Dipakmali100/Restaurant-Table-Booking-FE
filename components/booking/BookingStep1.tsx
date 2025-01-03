@@ -28,9 +28,10 @@ export default function   BookingStep1({
   availableTimeSlots,
   loader
 }: BookingStep1Props) {
-  const now = new Date();
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
+  const currentDateInIST = new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000);
+  currentDateInIST.setUTCHours(0, 0, 0, 0);
+  // console.log("Midnight: ", currentDateInIST);
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -40,7 +41,7 @@ export default function   BookingStep1({
             selected={date}
             onSelect={setDate}
             className="rounded-md border"
-            disabled={(date) => date < midnight}
+            disabled={(date) => date < currentDateInIST}
           />
         </div>
         <div className="space-y-4">
