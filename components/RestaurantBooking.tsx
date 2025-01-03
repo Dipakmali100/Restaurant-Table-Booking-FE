@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookingStep1 from "./booking/BookingStep1";
 import BookingStep2 from "./booking/BookingStep2";
 import BookingStep3 from "./booking/BookingStep3";
@@ -16,12 +16,14 @@ import {
 import { toast } from "sonner";
 import { BookingData } from "@/types/booking";
 import axios from "axios";
+import { timeSlots } from "@/lib/constants";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function RestaurantBooking() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [bookingData, setBookingData] = useState<BookingData>({
     time: "",
     guests: "",
@@ -29,6 +31,26 @@ export default function RestaurantBooking() {
     email: "",
     phone: "",
   });
+
+  useEffect(() => {
+    if (date) {
+      const fetchBookedTimes = async () => {
+        try {
+          const response = await axios.post(`${API_URL}/api/getBookedTimes`, { date });
+          const { data }: any = response;
+          if(data.success) {
+            const alreadyBookedTimes = data.data;
+            const updatedTimeSlots = timeSlots.filter((time) => !alreadyBookedTimes.includes(time));
+            setAvailableTimeSlots(updatedTimeSlots);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      handleInputChange("time", "")
+      fetchBookedTimes();
+    }
+  }, [date]);
 
   const handleInputChange = (field: string, value: string) => {
     setBookingData((prev) => ({ ...prev, [field]: value }));
@@ -94,6 +116,7 @@ export default function RestaurantBooking() {
             setDate={setDate}
             bookingData={bookingData}
             onInputChange={handleInputChange}
+            availableTimeSlots={availableTimeSlots}
           />
         )}
 
