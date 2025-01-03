@@ -23,6 +23,7 @@ export default function RestaurantBooking() {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [timeslotLoader, setTimeslotLoader] = useState(false);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
   const [bookingData, setBookingData] = useState<BookingData>({
     time: "",
@@ -36,17 +37,20 @@ export default function RestaurantBooking() {
     if (date) {
       const fetchBookedTimes = async () => {
         try {
+          setTimeslotLoader(true);
           const response = await axios.post(`${API_URL}/api/getBookedTimes`, { date });
           const { data }: any = response;
           if(data.success) {
             const alreadyBookedTimes = data.data;
             const updatedTimeSlots = timeSlots.filter((time) => !alreadyBookedTimes.includes(time));
             setAvailableTimeSlots(updatedTimeSlots);
+            setTimeslotLoader(false);
           }
         } catch (err) {
           console.error(err);
         }
       };
+      setAvailableTimeSlots([]);
       handleInputChange("time", "")
       fetchBookedTimes();
     }
@@ -117,6 +121,7 @@ export default function RestaurantBooking() {
             bookingData={bookingData}
             onInputChange={handleInputChange}
             availableTimeSlots={availableTimeSlots}
+            loader={timeslotLoader}
           />
         )}
 

@@ -17,6 +17,7 @@ interface BookingStep1Props {
   bookingData: BookingData;
   onInputChange: (field: string, value: string) => void;
   availableTimeSlots: string[];
+  loader: boolean;
 }
 
 export default function   BookingStep1({
@@ -24,7 +25,8 @@ export default function   BookingStep1({
   setDate,
   bookingData,
   onInputChange,
-  availableTimeSlots
+  availableTimeSlots,
+  loader
 }: BookingStep1Props) {
   const now = new Date();
   const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -52,11 +54,15 @@ export default function   BookingStep1({
                 <SelectValue placeholder="Select time" />
               </SelectTrigger>
               <SelectContent>
-                {availableTimeSlots.map((time) => (
+                {!loader ? availableTimeSlots.map((time) => (
                   <SelectItem key={time} value={time}>
                     {time}
                   </SelectItem>
-                ))}
+                )) : (
+                  <SelectItem value="Loading" disabled>
+                    Loading...
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>
