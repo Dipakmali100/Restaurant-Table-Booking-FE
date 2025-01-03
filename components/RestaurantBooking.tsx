@@ -20,7 +20,9 @@ import { timeSlots } from "@/lib/constants";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function RestaurantBooking() {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(
+    new Date(new Date().getTime() + 5.5 * 60 * 60 * 1000)
+  );
   const [step, setStep] = useState(1);
   const [isSuccess, setIsSuccess] = useState(false);
   const [timeslotLoader, setTimeslotLoader] = useState(false);
@@ -68,17 +70,17 @@ export default function RestaurantBooking() {
     if (
       step === 2
     ) {
-      if(!bookingData.name || !bookingData.email || !bookingData.phone) {
+      if (!bookingData.name || !bookingData.email || !bookingData.phone) {
         toast.error("Please fill in all fields");
         return;
         //include space in regex means space is allowed
-      }else if(!bookingData.name.match(/^[a-zA-Z ]+$/)){ 
+      } else if (!bookingData.name.match(/^[a-zA-Z ]+$/)) {
         toast.error("Name should not include numbers or symbols");
         return;
-      }else if(!bookingData.email.match(/\S+@\S+\.\S+/)){
+      } else if (!bookingData.email.match(/\S+@\S+\.\S+/)) {
         toast.error("Please enter a valid email address");
         return;
-      }else if(!bookingData.phone.match(/^[0-9]{10}$/)){
+      } else if (!bookingData.phone.match(/^[0-9]{10}$/)) {
         toast.error("Please enter a valid phone number");
         return;
       }
