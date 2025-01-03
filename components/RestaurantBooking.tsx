@@ -40,7 +40,7 @@ export default function RestaurantBooking() {
           setTimeslotLoader(true);
           const response = await axios.post(`${API_URL}/api/getBookedTimes`, { date });
           const { data }: any = response;
-          if(data.success) {
+          if (data.success) {
             const alreadyBookedTimes = data.data;
             const updatedTimeSlots = timeSlots.filter((time) => !alreadyBookedTimes.includes(time));
             setAvailableTimeSlots(updatedTimeSlots);
@@ -66,11 +66,22 @@ export default function RestaurantBooking() {
       return;
     }
     if (
-      step === 2 &&
-      (!bookingData.name || !bookingData.email || !bookingData.phone)
+      step === 2
     ) {
-      toast.error("Please fill in all fields");
-      return;
+      if(!bookingData.name || !bookingData.email || !bookingData.phone) {
+        toast.error("Please fill in all fields");
+        return;
+        //include space in regex means space is allowed
+      }else if(!bookingData.name.match(/^[a-zA-Z ]+$/)){ 
+        toast.error("Name should not include numbers or symbols");
+        return;
+      }else if(!bookingData.email.match(/\S+@\S+\.\S+/)){
+        toast.error("Please enter a valid email address");
+        return;
+      }else if(!bookingData.phone.match(/^[0-9]{10}$/)){
+        toast.error("Please enter a valid phone number");
+        return;
+      }
     }
     if (step < 3) {
       setStep(step + 1);
@@ -84,7 +95,7 @@ export default function RestaurantBooking() {
   };
 
   const handleSubmit = async () => {
-    
+
     try {
       // Adjust the date with the timezone offset
       if (date) {
